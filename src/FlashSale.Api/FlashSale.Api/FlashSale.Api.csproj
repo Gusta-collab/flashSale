@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\FlashSale.Core\FlashSale.Core\FlashSale.Core.csproj" />
+    <ProjectReference Include="..\..\FlashSale.Application\FlashSale.Application\FlashSale.Application.csproj" />
+    <ProjectReference Include="..\..\FlashSale.Infrastructure\FlashSale.Infrastructure\FlashSale.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+</Project>

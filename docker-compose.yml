@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  # ════════════════════════════════════════════════════════════
+  # PostgreSQL 16 - Banco de dados principal
+  # ════════════════════════════════════════════════════════════
+  postgres:
+    image: postgres:16-alpine
+    container_name: flashsale-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: flashsale
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - flashsale-network
+
+  # ════════════════════════════════════════════════════════════
+  # Redis 7 - Cache e Message Queue
+  # ════════════════════════════════════════════════════════════
+  redis:
+    image: redis:7-alpine
+    container_name: flashsale-redis
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - flashsale-network
+
+  # ════════════════════════════════════════════════════════════
+  # Redis Commander - UI para Redis (desenvolvimento)
+  # ════════════════════════════════════════════════════════════
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: flashsale-redis-ui
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+    networks:
+      - flashsale-network
+    profiles:
+      - dev
+
+  # ════════════════════════════════════════════════════════════
+  # pgAdmin - UI para PostgreSQL (desenvolvimento)
+  # ════════════════════════════════════════════════════════════
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: flashsale-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@flashsale.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8082:80"
+    depends_on:
+      - postgres
+    networks:
+      - flashsale-network
+    profiles:
+      - dev
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  flashsale-network:
+    driver: bridge
