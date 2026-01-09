@@ -10,11 +10,28 @@ Este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 ## [Unreleased]
 
 ### Added
-- 🔄 Redis Streams integration (em andamento)
+- 🔄 SignalR integration (próximo)
 
 ---
 
-## [0.3.0] - 2026-01-09
+## [0.5.0] - 2026-01-09
+
+### Added - Worker Service (Fase 6)
+- ✅ `OrderProcessingHandler` - processamento com locking de estoque
+- ✅ `OrderConsumerService` - BackgroundService com Consumer Groups
+- ✅ Graceful shutdown e retry logic
+- ✅ Integração com repositories para validação de estoque
+
+---
+
+## [0.4.0] - 2026-01-09
+
+### Added - Redis Integration (Fase 5)
+- ✅ `RedisStreamPublisher` - publicação com XADD
+- ✅ `RedisStreamConsumer` - consumo com XREADGROUP
+- ✅ `RedisCacheService` - cache distribuído
+- ✅ Interfaces: IStreamPublisher, IStreamConsumer, ICacheService
+- ✅ Integração com OrdersController
 
 ### Added - API Layer (Fase 4)
 - ✅ `OrdersController` com POST /orders e GET /orders/{id}
