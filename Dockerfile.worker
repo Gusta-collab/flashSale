@@ -1,0 +1,40 @@
+# ════════════════════════════════════════════════════════════════════════
+# FlashSale.Worker - Multi-stage Dockerfile
+# ════════════════════════════════════════════════════════════════════════
+
+# STAGE 1: Build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# Copiar csproj e restaurar dependências
+COPY ["src/FlashSale.Core/FlashSale.Core/FlashSale.Core.csproj", "FlashSale.Core/"]
+COPY ["src/FlashSale.Application/FlashSale.Application/FlashSale.Application.csproj", "FlashSale.Application/"]
+COPY ["src/FlashSale.Infrastructure/FlashSale.Infrastructure/FlashSale.Infrastructure.csproj", "FlashSale.Infrastructure/"]
+COPY ["src/FlashSale.Worker/FlashSale.Worker/FlashSale.Worker.csproj", "FlashSale.Worker/"]
+RUN dotnet restore "FlashSale.Worker/FlashSale.Worker.csproj"
+
+# Copiar código fonte
+COPY src/FlashSale.Core/FlashSale.Core/ FlashSale.Core/
+COPY src/FlashSale.Application/FlashSale.Application/ FlashSale.Application/
+COPY src/FlashSale.Infrastructure/FlashSale.Infrastructure/ FlashSale.Infrastructure/
+COPY src/FlashSale.Worker/FlashSale.Worker/ FlashSale.Worker/
+
+# Build
+WORKDIR /src/FlashSale.Worker
+RUN dotnet publish -c Release -o /app/publish
+
+# ════════════════════════════════════════════════════════════════════════
+# STAGE 2: Runtime
+# ════════════════════════════════════════════════════════════════════════
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS runtime
+
+# Segurança: usuário não-root
+RUN adduser -S appuser
+WORKDIR /app
+
+COPY --from=build /app/publish .
+
+RUN chown -R appuser /app
+USER appuser
+
+ENTRYPOINT ["dotnet", "FlashSale.Worker.dll"]

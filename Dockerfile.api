@@ -1,0 +1,47 @@
+# ════════════════════════════════════════════════════════════════════════
+# FlashSale.Api - Multi-stage Dockerfile
+# ════════════════════════════════════════════════════════════════════════
+
+# STAGE 1: Build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# Copiar csproj e restaurar dependências (cache de layers)
+COPY ["src/FlashSale.Core/FlashSale.Core/FlashSale.Core.csproj", "FlashSale.Core/"]
+COPY ["src/FlashSale.Application/FlashSale.Application/FlashSale.Application.csproj", "FlashSale.Application/"]
+COPY ["src/FlashSale.Infrastructure/FlashSale.Infrastructure/FlashSale.Infrastructure.csproj", "FlashSale.Infrastructure/"]
+COPY ["src/FlashSale.Api/FlashSale.Api/FlashSale.Api.csproj", "FlashSale.Api/"]
+RUN dotnet restore "FlashSale.Api/FlashSale.Api.csproj"
+
+# Copiar código fonte
+COPY src/FlashSale.Core/FlashSale.Core/ FlashSale.Core/
+COPY src/FlashSale.Application/FlashSale.Application/ FlashSale.Application/
+COPY src/FlashSale.Infrastructure/FlashSale.Infrastructure/ FlashSale.Infrastructure/
+COPY src/FlashSale.Api/FlashSale.Api/ FlashSale.Api/
+
+# Build
+WORKDIR /src/FlashSale.Api
+RUN dotnet publish -c Release -o /app/publish
+
+# ════════════════════════════════════════════════════════════════════════
+# STAGE 2: Runtime (imagem mínima)
+# ════════════════════════════════════════════════════════════════════════
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS runtime
+
+# Segurança: usuário não-root
+RUN adduser -S appuser
+WORKDIR /app
+
+COPY --from=build /app/publish .
+
+# Permissões
+RUN chown -R appuser /app
+USER appuser
+
+EXPOSE 8080
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD wget -q --spider http://localhost:8080/health || exit 1
+
+ENTRYPOINT ["dotnet", "FlashSale.Api.dll"]

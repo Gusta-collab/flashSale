@@ -9,8 +9,31 @@ Este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [Unreleased]
 
-### Added
-- 🔄 Testes automatizados (próximo)
+### Planned
+- 📋 Integration tests
+- 📋 Load tests com k6
+
+---
+
+## [0.8.0] - 2026-01-09
+
+### Added - Docker & CI/CD (Fase 9)
+- ✅ `Dockerfile.api` - Multi-stage com Alpine e non-root user
+- ✅ `Dockerfile.worker` - Multi-stage otimizado
+- ✅ GitHub Actions workflow com build, test, security, Docker
+- ✅ Trivy security scanning
+- ✅ Codecov coverage upload
+
+---
+
+## [0.7.0] - 2026-01-09
+
+### Added - Automated Tests (Fase 8)
+- ✅ 13 testes unitários passando
+- ✅ `ProductTests` - testes de estoque
+- ✅ `OrderTests` - testes de pedido
+- ✅ `DomainExceptionTests` - testes de exceções
+- ✅ FluentAssertions + Moq configurados
 
 ---
 
