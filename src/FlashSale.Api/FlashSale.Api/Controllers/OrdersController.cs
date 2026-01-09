@@ -15,15 +15,20 @@ public class OrdersController : ControllerBase
 {
     private readonly IOrderRepository _orderRepository;
     private readonly IProductRepository _productRepository;
+    private readonly IStreamPublisher _streamPublisher;
     private readonly ILogger<OrdersController> _logger;
+
+    private const string OrdersStream = "orders:pending";
 
     public OrdersController(
         IOrderRepository orderRepository,
         IProductRepository productRepository,
+        IStreamPublisher streamPublisher,
         ILogger<OrdersController> logger)
     {
         _orderRepository = orderRepository;
         _productRepository = productRepository;
+        _streamPublisher = streamPublisher;
         _logger = logger;
     }
 
@@ -86,7 +91,21 @@ public class OrdersController : ControllerBase
 
         _logger.LogInformation("Pedido criado. OrderId: {OrderId}", order.Id);
 
-        // TODO: Publicar no Redis Stream para processamento assíncrono
+        // Publicar no Redis Stream para processamento assíncrono pelo Worker
+        var streamMessage = new OrderStreamMessage
+        {
+            OrderId = order.Id,
+            CustomerId = order.CustomerId,
+            IdempotencyKey = order.IdempotencyKey,
+            Items = order.Items.Select(i => new OrderItemStreamMessage
+            {
+                ProductId = i.ProductId,
+                Quantity = i.Quantity
+            }).ToList()
+        };
+
+        await _streamPublisher.PublishAsync(OrdersStream, streamMessage);
+        _logger.LogInformation("Pedido publicado no stream. OrderId: {OrderId}", order.Id);
 
         return Accepted(new OrderAcceptedResponse
         {

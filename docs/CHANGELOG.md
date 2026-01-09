@@ -10,19 +10,54 @@ Este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 ## [Unreleased]
 
 ### Added
-- ✅ Estrutura de projeto Clean Architecture (.NET 8)
-- ✅ Solution com 6 projetos (Api, Worker, Core, Application, Infrastructure, Tests)
-- ✅ Entidades de domínio: Product, Order, OrderItem, Customer, BaseEntity
+- 🔄 Redis Streams integration (em andamento)
+
+---
+
+## [0.3.0] - 2026-01-09
+
+### Added - API Layer (Fase 4)
+- ✅ `OrdersController` com POST /orders e GET /orders/{id}
+- ✅ `ProductsController` com GET /products
+- ✅ `HealthController` com health checks
+- ✅ DTOs: CreateOrderRequest, OrderResponse, ProductResponse
+- ✅ FluentValidation para validação de entrada
+- ✅ Middleware: ExceptionHandling, CorrelationId
+- ✅ Swagger/OpenAPI configurado
+
+---
+
+## [0.2.0] - 2026-01-09
+
+### Added - Infrastructure Layer (Fase 3)
+- ✅ Entity Framework Core 8.0 com PostgreSQL
+- ✅ ApplicationDbContext com auto-timestamps
+- ✅ Entity Configurations (Product, Order, OrderItem, Customer)
+- ✅ Repository pattern: Repository<T>, ProductRepository, OrderRepository
+- ✅ Optimistic Locking via Version field
+- ✅ Pessimistic Locking via SELECT FOR UPDATE
+- ✅ DependencyInjection extension
+
+---
+
+## [0.1.0] - 2026-01-09
+
+### Added - Setup e Core (Fases 1-2)
+- ✅ Estrutura Clean Architecture (.NET 8)
+- ✅ Solution com 6 projetos
+- ✅ Entidades: Product, Order, OrderItem, Customer, BaseEntity
 - ✅ Enums: OrderStatus, StockMovementType
 - ✅ Interfaces: IRepository, IOrderRepository, IProductRepository
-- ✅ Exceções de domínio: DomainException, InsufficientStockException, etc.
-- ✅ Docker Compose com PostgreSQL 16 e Redis 7
-- ✅ Arquivos de configuração: .env.example, .gitignore
+- ✅ Exceções de domínio
+- ✅ Docker Compose (PostgreSQL 16, Redis 7)
+- ✅ Documentação de regras (/rules)
 
-### Infrastructure
-- 🔄 Em progresso: Entity Framework Core setup
-  - `00-INDEX.md` - Índice geral
-  - `01-PROGRESS.md` - Milestones e KPIs
+---
+
+## Legenda
+- ✅ Concluído
+- 🔄 Em progresso
+- 🔲 Pendente
   - `02-CLEAN-CODE.md` - Padrões Clean Code e SOLID
   - `03-SECURITY.md` - DevSecOps e OWASP
   - `04-GIT-VERSIONING.md` - Git Flow e Conventional Commits

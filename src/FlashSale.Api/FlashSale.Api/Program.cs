@@ -18,10 +18,12 @@ builder.Services.AddControllers();
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateOrderRequestValidator>();
 
-// Infrastructure (EF Core, Repositories)
-var connectionString = builder.Configuration.GetConnectionString("PostgreSQL") 
+// Infrastructure (EF Core, Repositories, Redis)
+var postgresConnectionString = builder.Configuration.GetConnectionString("PostgreSQL") 
     ?? "Host=localhost;Port=5432;Database=flashsale;Username=postgres;Password=postgres";
-builder.Services.AddInfrastructure(connectionString);
+var redisConnectionString = builder.Configuration.GetConnectionString("Redis") 
+    ?? "localhost:6379";
+builder.Services.AddInfrastructure(postgresConnectionString, redisConnectionString);
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
