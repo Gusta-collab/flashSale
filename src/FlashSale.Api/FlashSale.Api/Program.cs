@@ -1,5 +1,8 @@
+using FlashSale.Api.Hubs;
 using FlashSale.Api.Middleware;
+using FlashSale.Api.Services;
 using FlashSale.Api.Validators;
+using FlashSale.Core.Interfaces;
 using FlashSale.Infrastructure;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -24,6 +27,17 @@ var postgresConnectionString = builder.Configuration.GetConnectionString("Postgr
 var redisConnectionString = builder.Configuration.GetConnectionString("Redis") 
     ?? "localhost:6379";
 builder.Services.AddInfrastructure(postgresConnectionString, redisConnectionString);
+
+// ════════════════════════════════════════════════════════════════════════
+// SignalR com Redis Backplane
+// ════════════════════════════════════════════════════════════════════════
+builder.Services.AddSignalR()
+    .AddStackExchangeRedis(redisConnectionString, options =>
+    {
+        options.Configuration.ChannelPrefix = "FlashSale";
+    });
+
+builder.Services.AddScoped<INotificationService, SignalRNotificationService>();
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
@@ -72,6 +86,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
+
+// Mapear controllers e hubs
 app.MapControllers();
+app.MapHub<OrderNotificationHub>("/hubs/orders");
 
 app.Run();
+

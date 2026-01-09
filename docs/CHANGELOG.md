@@ -10,7 +10,18 @@ Este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 ## [Unreleased]
 
 ### Added
-- 🔄 SignalR integration (próximo)
+- 🔄 Testes automatizados (próximo)
+
+---
+
+## [0.6.0] - 2026-01-09
+
+### Added - SignalR (Fase 7)
+- ✅ `OrderNotificationHub` - Hub WebSocket para pedidos
+- ✅ `SignalRNotificationService` - serviço de notificações
+- ✅ Redis Backplane para escalabilidade horizontal
+- ✅ Eventos: OrderConfirmed, OrderFailed, OrderStatusChanged
+- ✅ README.md atualizado com documentação completa
 
 ---
 
