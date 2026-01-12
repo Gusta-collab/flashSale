@@ -15,7 +15,16 @@ Este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ---
 
-## [0.8.0] - 2026-01-09
+## [0.9.0] - 2026-01-12
+
+### Added - Front-end (Fase 10)
+- ✅ Next.js 14 + TypeScript + Tailwind CSS
+- ✅ `ProductCard` - card de produto com indicadores de estoque
+- ✅ `CountdownTimer` - timer com animação de urgência
+- ✅ `Toast` - notificações com useToast hook
+- ✅ `useSignalR` - hook para conexão WebSocket real-time
+- ✅ API service com axios
+- ✅ Home page com grid de produtos e Flash Sale
 
 ### Added - Docker & CI/CD (Fase 9)
 - ✅ `Dockerfile.api` - Multi-stage com Alpine e non-root user

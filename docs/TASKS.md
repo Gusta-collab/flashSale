@@ -244,6 +244,55 @@ Este documento detalha as tasks de implementação do projeto QueueMaster, segui
 - CI workflow
 - CD workflow
 
+## Fase 10: Front-end (Semana 7)
+
+### Task 10.1: Setup Next.js 14
+**Prioridade:** 🔴 Crítica  
+**Estimativa:** 1h  
+**Dependências:** Fase 4 (API)
+
+- Criar projeto Next.js 14 + TypeScript
+- Configurar ESLint + Prettier
+- Setup Tailwind CSS
+- Estrutura de pastas
+
+### Task 10.2: Componentes Base
+**Prioridade:** 🔴 Crítica  
+**Estimativa:** 2h  
+**Dependências:** Task 10.1
+
+- Layout (Header, Footer)
+- ProductCard, Button, Modal
+- Loading, Error states
+
+### Task 10.3: Páginas
+**Prioridade:** 🔴 Crítica  
+**Estimativa:** 3h  
+**Dependências:** Task 10.2
+
+- Home (Flash Sale)
+- Checkout
+- Order Status
+
+### Task 10.4: SignalR Integration
+**Prioridade:** 🟠 Alta  
+**Estimativa:** 2h  
+**Dependências:** Task 10.3, Fase 7
+
+- Hook useSignalR
+- Real-time notifications
+- Toast component
+
+### Task 10.5: Testes + Polish
+**Prioridade:** 🟠 Alta  
+**Estimativa:** 2h  
+**Dependências:** Task 10.4
+
+- Vitest unit tests
+- Animações
+- Responsividade
+- Dark mode
+
 ---
 
 ## 📊 Resumo
@@ -259,9 +308,11 @@ Este documento detalha as tasks de implementação do projeto QueueMaster, segui
 | 7. SignalR | 2 | 4h |
 | 8. Testes | 2 | 10h |
 | 9. Docker/CI | 2 | 4h |
-| **Total** | **22** | **~47h** |
+| **10. Front-end** | **5** | **10h** |
+| **Total** | **27** | **~57h** |
 
 ---
 
 📅 **Criado:** 2026-01-09  
-📝 **Status:** Em execução
+📝 **Atualizado:** 2026-01-12  
+📝 **Status:** Front-end em desenvolvimento
