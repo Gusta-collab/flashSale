@@ -12,6 +12,19 @@ Este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 ### Planned
 - 📋 Integration tests
 - 📋 Load tests com k6
+- 📋 Teste E2E com backend
+
+---
+
+## [0.9.1] - 2026-01-15
+
+### Changed - Front-end Refactoring
+- ✅ `UserContext` - CustomerId persistido em localStorage
+- ✅ `OrderProcessingModal` - Estados pending/confirmed/failed
+- ✅ `/orders/[id]` - Página de status com polling + SignalR
+- ✅ Types atualizados para espelhar backend DTOs
+- ✅ SignalR `SubscribeToOrder(orderId)` por pedido
+- ✅ UTM params capturados da URL
 
 ---
 
