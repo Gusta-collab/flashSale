@@ -1,55 +1,85 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { ProductCard } from '@/components/products/ProductCard';
 import { CountdownTimer } from '@/components/ui/CountdownTimer';
 import { ToastContainer, useToast } from '@/components/ui/Toast';
+import { OrderProcessingModal } from '@/components/orders/OrderProcessingModal';
 import { useSignalR } from '@/hooks/useSignalR';
-import { getProducts, createOrder, generateIdempotencyKey } from '@/services/api';
-import { Product } from '@/types';
+import { useUser } from '@/contexts/UserContext';
+import { getProducts, createOrder, generateIdempotencyKey, extractUtmParams } from '@/services/api';
+import { Product, OrderConfirmedEvent, OrderFailedEvent } from '@/types';
 
-// Dados mock para desenvolvimento (quando backend não está rodando)
+// ════════════════════════════════════════════════════════════════════════
+// Home Page - Flash Sale
+// Fluxo conforme docs:
+// 1. Cliente clica "Comprar"
+// 2. POST /orders → Retorna 202 + orderId
+// 3. Modal "Aguardando..." + SubscribeToOrder(orderId)
+// 4. Recebe OrderConfirmed/Failed via SignalR
+// ════════════════════════════════════════════════════════════════════════
+
+// Mock products para quando backend não está disponível
 const mockProducts: Product[] = [
-  { id: '1', name: 'iPhone 15 Pro Max', description: 'O smartphone mais avançado da Apple', price: 8999.00, stock: 5, isActive: true },
-  { id: '2', name: 'Samsung Galaxy S24 Ultra', description: 'Potência e inteligência artificial', price: 7499.00, stock: 8, isActive: true },
-  { id: '3', name: 'MacBook Pro M3', description: 'Performance profissional', price: 14999.00, stock: 3, isActive: true },
-  { id: '4', name: 'PlayStation 5', description: 'A nova geração de games', price: 3999.00, stock: 0, isActive: true },
-  { id: '5', name: 'AirPods Pro 2', description: 'Som imersivo e cancelamento de ruído', price: 1899.00, stock: 15, isActive: true },
-  { id: '6', name: 'iPad Pro 12.9"', description: 'Seu próximo computador não é um computador', price: 9499.00, stock: 4, isActive: true },
+  { id: 'f47ac10b-58cc-4372-a567-0e02b2c3d479', name: 'iPhone 15 Pro Max', description: 'O smartphone mais avançado da Apple', price: 8999.00, stock: 5, isActive: true },
+  { id: '550e8400-e29b-41d4-a716-446655440001', name: 'Samsung Galaxy S24 Ultra', description: 'Potência e inteligência artificial', price: 7499.00, stock: 8, isActive: true },
+  { id: '550e8400-e29b-41d4-a716-446655440002', name: 'MacBook Pro M3', description: 'Performance profissional', price: 14999.00, stock: 3, isActive: true },
+  { id: '550e8400-e29b-41d4-a716-446655440003', name: 'PlayStation 5', description: 'A nova geração de games', price: 3999.00, stock: 0, isActive: true },
+  { id: '550e8400-e29b-41d4-a716-446655440004', name: 'AirPods Pro 2', description: 'Som imersivo e cancelamento de ruído', price: 1899.00, stock: 15, isActive: true },
+  { id: '550e8400-e29b-41d4-a716-446655440005', name: 'iPad Pro 12.9"', description: 'Seu próximo computador não é um computador', price: 9499.00, stock: 4, isActive: true },
 ];
 
 export default function HomePage() {
-  const [products, setProducts] = useState<Product[]>(mockProducts);
-  const [isLoading, setIsLoading] = useState(true);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [isOrdering, setIsOrdering] = useState(false);
-
+  const router = useRouter();
+  const { customerId, isReady } = useUser();
   const { toasts, addToast, removeToast } = useToast();
 
-  // SignalR para notificações
-  const { isConnected } = useSignalR({
-    onOrderConfirmed: (event) => {
-      addToast({
-        type: 'success',
-        title: '✅ Pedido Confirmado!',
-        message: `Valor total: R$ ${event.totalAmount.toFixed(2)}`,
-      });
-      setIsOrdering(false);
-      setSelectedProduct(null);
-    },
-    onOrderFailed: (event) => {
-      addToast({
-        type: 'error',
-        title: '❌ Pedido Falhou',
-        message: event.reason,
-      });
-      setIsOrdering(false);
-    },
+  // State
+  const [products, setProducts] = useState<Product[]>(mockProducts);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Order processing state
+  const [currentOrderId, setCurrentOrderId] = useState<string | null>(null);
+  const [orderStatus, setOrderStatus] = useState<'pending' | 'processing' | 'confirmed' | 'failed'>('pending');
+  const [confirmedData, setConfirmedData] = useState<OrderConfirmedEvent | undefined>();
+  const [failedData, setFailedData] = useState<OrderFailedEvent | undefined>();
+  const [showModal, setShowModal] = useState(false);
+
+  // SignalR event handlers
+  const handleOrderConfirmed = useCallback((event: OrderConfirmedEvent) => {
+    console.log('📦 OrderConfirmed recebido:', event);
+    if (event.orderId === currentOrderId) {
+      setOrderStatus('confirmed');
+      setConfirmedData(event);
+
+      // Atualizar estoque local
+      setProducts(prev => prev.map(p => ({
+        ...p,
+        stock: Math.max(0, p.stock - 1) // Simplificado - idealmente recarregar do backend
+      })));
+    }
+  }, [currentOrderId]);
+
+  const handleOrderFailed = useCallback((event: OrderFailedEvent) => {
+    console.log('❌ OrderFailed recebido:', event);
+    if (event.orderId === currentOrderId) {
+      setOrderStatus('failed');
+      setFailedData(event);
+    }
+  }, [currentOrderId]);
+
+  // SignalR connection
+  const { isConnected, subscribeToOrder, unsubscribeFromOrder } = useSignalR({
+    orderId: currentOrderId || undefined,
+    onOrderConfirmed: handleOrderConfirmed,
+    onOrderFailed: handleOrderFailed,
   });
 
   // Flash Sale termina em 2 horas
   const flashSaleEndTime = new Date(Date.now() + 2 * 60 * 60 * 1000);
 
+  // Load products
   useEffect(() => {
     async function loadProducts() {
       try {
@@ -57,7 +87,6 @@ export default function HomePage() {
         setProducts(data);
       } catch (error) {
         console.log('Backend não disponível, usando mock data');
-        // Mantém mockProducts
       } finally {
         setIsLoading(false);
       }
@@ -65,44 +94,85 @@ export default function HomePage() {
     loadProducts();
   }, []);
 
+  // Subscribe to order when orderId changes
+  useEffect(() => {
+    if (isConnected && currentOrderId) {
+      subscribeToOrder(currentOrderId);
+      console.log('📡 Subscribed to order:', currentOrderId);
+    }
+
+    return () => {
+      if (currentOrderId) {
+        unsubscribeFromOrder(currentOrderId);
+      }
+    };
+  }, [isConnected, currentOrderId, subscribeToOrder, unsubscribeFromOrder]);
+
+  // Handle buy click
   async function handleBuy(product: Product) {
-    setSelectedProduct(product);
-    setIsOrdering(true);
+    if (!isReady || !customerId) {
+      addToast({
+        type: 'error',
+        title: 'Erro',
+        message: 'Aguarde a inicialização...',
+      });
+      return;
+    }
+
+    // Reset state
+    setOrderStatus('pending');
+    setConfirmedData(undefined);
+    setFailedData(undefined);
 
     try {
+      // Extrair UTM params
+      const utmParams = extractUtmParams();
+
+      // POST /orders → 202 Accepted
       const response = await createOrder({
-        customerId: 'demo-customer-123',
+        customerId,
         idempotencyKey: generateIdempotencyKey(),
         items: [{ productId: product.id, quantity: 1 }],
+        ...utmParams,
       });
+
+      console.log('📝 Pedido aceito:', response);
+
+      // Abrir modal e aguardar SignalR
+      setCurrentOrderId(response.orderId);
+      setShowModal(true);
 
       addToast({
         type: 'info',
-        title: '⏳ Pedido Recebido',
-        message: 'Processando seu pedido...',
+        title: '⏳ Pedido na Fila',
+        message: response.message,
       });
 
-      // Atualizar estoque local
-      setProducts(prev => prev.map(p =>
-        p.id === product.id ? { ...p, stock: p.stock - 1 } : p
-      ));
-
-    } catch (error) {
+    } catch (error: unknown) {
+      console.error('Erro ao criar pedido:', error);
       addToast({
         type: 'error',
         title: 'Erro ao criar pedido',
         message: 'Tente novamente em instantes',
       });
-      setIsOrdering(false);
-      setSelectedProduct(null);
     }
+  }
+
+  function handleCloseModal() {
+    setShowModal(false);
+    setCurrentOrderId(null);
+    setOrderStatus('pending');
+  }
+
+  function handleViewOrderStatus(orderId: string) {
+    setShowModal(false);
+    router.push(`/orders/${orderId}`);
   }
 
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative py-16 overflow-hidden">
-        {/* Background gradient */}
         <div className="absolute inset-0 bg-gradient-to-b from-indigo-500/10 via-transparent to-transparent pointer-events-none" />
 
         <div className="container mx-auto px-4 relative">
@@ -122,7 +192,6 @@ export default function HomePage() {
               Descontos exclusivos por tempo limitado. Quando acabar, acabou!
             </p>
 
-            {/* Countdown */}
             <div className="flex justify-center">
               <CountdownTimer
                 endTime={flashSaleEndTime}
@@ -173,6 +242,17 @@ export default function HomePage() {
           {isConnected ? 'Conectado' : 'Conectando...'}
         </div>
       </div>
+
+      {/* Order Processing Modal */}
+      <OrderProcessingModal
+        isOpen={showModal}
+        orderId={currentOrderId}
+        status={orderStatus}
+        confirmedData={confirmedData}
+        failedData={failedData}
+        onClose={handleCloseModal}
+        onViewStatus={handleViewOrderStatus}
+      />
 
       {/* Toasts */}
       <ToastContainer toasts={toasts} onRemove={removeToast} />

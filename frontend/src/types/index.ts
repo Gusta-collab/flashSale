@@ -1,9 +1,12 @@
 // ════════════════════════════════════════════════════════════════════════
-// DTOs que espelham o backend .NET
+// DTOs que espelham EXATAMENTE o backend .NET
+// Baseado em: src/FlashSale.Api/DTOs/*
 // ════════════════════════════════════════════════════════════════════════
 
+// ── Products ─────────────────────────────────────────────────────────────
+
 export interface Product {
-    id: string;
+    id: string;        // Guid no backend
     name: string;
     description?: string;
     price: number;
@@ -11,13 +14,19 @@ export interface Product {
     isActive: boolean;
 }
 
+// ── Orders ───────────────────────────────────────────────────────────────
+
 export interface OrderItem {
-    productId: string;
+    productId: string; // Guid no backend
     quantity: number;
 }
 
+/**
+ * Request para POST /api/v1/orders
+ * Baseado em: CreateOrderRequest.cs
+ */
 export interface CreateOrderRequest {
-    customerId: string;
+    customerId: string;      // Guid no backend
     idempotencyKey: string;
     items: OrderItem[];
     utmSource?: string;
@@ -25,19 +34,27 @@ export interface CreateOrderRequest {
     utmCampaign?: string;
 }
 
+/**
+ * Response de POST /api/v1/orders (202 Accepted)
+ * Baseado em: OrderAcceptedResponse.cs
+ */
 export interface OrderAcceptedResponse {
-    orderId: string;
+    orderId: string;   // Guid no backend
     status: string;
     message: string;
 }
 
+/**
+ * Response de GET /api/v1/orders/{id}
+ * Baseado em: OrderResponse.cs
+ */
 export interface OrderResponse {
     id: string;
-    status: 'Pending' | 'Processing' | 'Confirmed' | 'Failed' | 'Cancelled';
+    status: OrderStatus;
     totalAmount: number;
     errorMessage?: string;
-    createdAt: string;
-    processedAt?: string;
+    createdAt: string;    // ISO date string
+    processedAt?: string; // ISO date string
     items: OrderItemResponse[];
 }
 
@@ -49,7 +66,22 @@ export interface OrderItemResponse {
     subtotal: number;
 }
 
-// SignalR Events
+/**
+ * Response de GET /api/v1/orders/{id}/status
+ */
+export interface OrderStatusResponse {
+    orderId: string;
+    status: string;
+    processedAt?: string;
+}
+
+// ── Enums ────────────────────────────────────────────────────────────────
+
+export type OrderStatus = 'Pending' | 'Processing' | 'Confirmed' | 'Failed' | 'Cancelled';
+
+// ── SignalR Events ───────────────────────────────────────────────────────
+// Baseado em: SignalRNotificationService.cs
+
 export interface OrderConfirmedEvent {
     orderId: string;
     status: string;
@@ -62,4 +94,17 @@ export interface OrderFailedEvent {
     status: string;
     reason: string;
     timestamp: string;
+}
+
+export interface OrderStatusChangedEvent {
+    orderId: string;
+    status: string;
+}
+
+// ── UTM Parameters ───────────────────────────────────────────────────────
+
+export interface UtmParams {
+    utmSource?: string;
+    utmMedium?: string;
+    utmCampaign?: string;
 }
