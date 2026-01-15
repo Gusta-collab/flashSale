@@ -21,13 +21,14 @@ import { Product, OrderConfirmedEvent, OrderFailedEvent } from '@/types';
 // ════════════════════════════════════════════════════════════════════════
 
 // Mock products para quando backend não está disponível
+// Tema: Venda de Ingressos para Shows (conforme QueueMaster_Explicacao_Detalhada.md)
 const mockProducts: Product[] = [
-  { id: 'f47ac10b-58cc-4372-a567-0e02b2c3d479', name: 'iPhone 15 Pro Max', description: 'O smartphone mais avançado da Apple', price: 8999.00, stock: 5, isActive: true },
-  { id: '550e8400-e29b-41d4-a716-446655440001', name: 'Samsung Galaxy S24 Ultra', description: 'Potência e inteligência artificial', price: 7499.00, stock: 8, isActive: true },
-  { id: '550e8400-e29b-41d4-a716-446655440002', name: 'MacBook Pro M3', description: 'Performance profissional', price: 14999.00, stock: 3, isActive: true },
-  { id: '550e8400-e29b-41d4-a716-446655440003', name: 'PlayStation 5', description: 'A nova geração de games', price: 3999.00, stock: 0, isActive: true },
-  { id: '550e8400-e29b-41d4-a716-446655440004', name: 'AirPods Pro 2', description: 'Som imersivo e cancelamento de ruído', price: 1899.00, stock: 15, isActive: true },
-  { id: '550e8400-e29b-41d4-a716-446655440005', name: 'iPad Pro 12.9"', description: 'Seu próximo computador não é um computador', price: 9499.00, stock: 4, isActive: true },
+  { id: 'f47ac10b-58cc-4372-a567-0e02b2c3d479', name: 'Rock in Rio 2026 - Pista', description: 'Ingresso Pista - Dia 15/09', price: 695.00, stock: 150, isActive: true },
+  { id: '550e8400-e29b-41d4-a716-446655440001', name: 'Rock in Rio 2026 - VIP', description: 'Área VIP com open bar e vista privilegiada', price: 1890.00, stock: 25, isActive: true },
+  { id: '550e8400-e29b-41d4-a716-446655440002', name: 'Lollapalooza Brasil - Day 1', description: 'Ingresso válido para sexta-feira', price: 580.00, stock: 80, isActive: true },
+  { id: '550e8400-e29b-41d4-a716-446655440003', name: 'Show Taylor Swift - Esgotado', description: 'The Eras Tour - São Paulo', price: 890.00, stock: 0, isActive: true },
+  { id: '550e8400-e29b-41d4-a716-446655440004', name: 'Festival Primavera Sound', description: 'Passaporte 3 dias completo', price: 1250.00, stock: 45, isActive: true },
+  { id: '550e8400-e29b-41d4-a716-446655440005', name: 'Teatro - Hamilton Musical', description: 'Plateia Premium - Domingo 19h', price: 450.00, stock: 12, isActive: true },
 ];
 
 export default function HomePage() {
@@ -235,8 +236,8 @@ export default function HomePage() {
       {/* Connection Status */}
       <div className="fixed bottom-4 left-4">
         <div className={`flex items-center gap-2 px-3 py-2 rounded-full text-xs ${isConnected
-            ? 'bg-green-500/10 text-green-400 border border-green-500/20'
-            : 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20'
+          ? 'bg-green-500/10 text-green-400 border border-green-500/20'
+          : 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/20'
           }`}>
           <span className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-400' : 'bg-yellow-400 animate-pulse'}`} />
           {isConnected ? 'Conectado' : 'Conectando...'}

@@ -16,6 +16,16 @@ Este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [0.9.2] - 2026-01-15
+
+### Changed - Alinhamento com Tema Ingressos
+- ✅ Mock data atualizado (Rock in Rio, Lollapalooza, etc.)
+- ✅ README atualizado para "Sistema de Venda de Ingressos"
+- ✅ `01-PROGRESS.md` - Milestones M1-M8 marcados como concluídos
+- ✅ Documentação alinhada com `QueueMaster_Explicacao_Detalhada.md`
+
+---
+
 ## [0.9.1] - 2026-01-15
 
 ### Changed - Front-end Refactoring

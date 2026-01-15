@@ -63,15 +63,15 @@ Semana 6    Semana 7    Semana 8    Semana 9
 
 | Marco | Nome | Descrição | Entregáveis | Status |
 |-------|------|-----------|-------------|--------|
-| **M1** | Setup | Estrutura Clean Architecture | Solution, projetos, DI | 🔲 Pendente |
-| **M2** | API | Gateway de entrada | Controllers, DTOs, Middleware | 🔲 Pendente |
-| **M3** | Worker | Processador de fila | Consumer, Handlers | 🔲 Pendente |
-| **M4** | Redis | Integração messaging | Streams, Cache, Locks | 🔲 Pendente |
-| **M5** | SignalR | Real-time | Hub, Notifications | 🔲 Pendente |
-| **M6** | Tests | Testes Unit/Integration | 80% coverage | 🔲 Pendente |
+| **M1** | Setup | Estrutura Clean Architecture | Solution, projetos, DI | ✅ Concluído |
+| **M2** | API | Gateway de entrada | Controllers, DTOs, Middleware | ✅ Concluído |
+| **M3** | Worker | Processador de fila | Consumer, Handlers | ✅ Concluído |
+| **M4** | Redis | Integração messaging | Streams, Cache, Locks | ✅ Concluído |
+| **M5** | SignalR | Real-time | Hub, Notifications | ✅ Concluído |
+| **M6** | Tests | Testes Unit/Integration | 80% coverage | 🔄 Em Progresso (40%) |
 | **M7** | Load | Testes de carga | k6 scripts, relatórios | 🔲 Pendente |
-| **M8** | Docker | Containerização | Dockerfile, Compose, K8s | 🔲 Pendente |
-| **M9** | Docs | Documentação final | README, API docs | 🔲 Pendente |
+| **M8** | Docker | Containerização | Dockerfile, Compose, K8s | ✅ Concluído |
+| **M9** | Docs | Documentação final | README, API docs | 🔄 Em Progresso |
 
 ---
 
@@ -233,7 +233,11 @@ Semana 6    Semana 7    Semana 8    Semana 9
 | Data | Marco | Atividade | Responsável | Status |
 |------|-------|-----------|-------------|--------|
 | 2026-01-09 | M0 | Documentação inicial criada | Team | ✅ |
-| - | M1 | - | - | 🔲 |
+| 2026-01-09 | M1-M5 | Backend completo (API, Worker, Redis, SignalR) | Team | ✅ |
+| 2026-01-09 | M6 | Testes unitários (13 testes) | Team | ✅ |
+| 2026-01-09 | M8 | Docker + CI/CD (GitHub Actions) | Team | ✅ |
+| 2026-01-12 | M10 | Front-end Next.js 16.1.1 | Team | ✅ |
+| 2026-01-15 | M9 | Alinhamento documentação | Team | 🔄 |
 
 ### 5.2 Bloqueios Atuais
 

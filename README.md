@@ -1,11 +1,11 @@
-# 🚀 FlashSale - Sistema de Vendas de Alta Demanda
+# 🎫 FlashSale - Sistema de Venda de Ingressos de Alta Demanda
 
 [![.NET 8](https://img.shields.io/badge/.NET-8.0-512BD4)](https://dotnet.microsoft.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791)](https://www.postgresql.org/)
 [![Redis](https://img.shields.io/badge/Redis-7-DC382D)](https://redis.io/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-Sistema de **Flash Sale** desenvolvido com arquitetura **Clean Architecture**, processamento assíncrono via **Redis Streams**, e notificações em tempo real com **SignalR**.
+Sistema de **Flash Sale para Ingressos** desenvolvido com arquitetura **Clean Architecture**, processamento assíncrono via **Redis Streams**, e notificações em tempo real com **SignalR**. Ideal para cenários de alta demanda como venda de ingressos de shows, festivais e eventos.
 
 ---
 
